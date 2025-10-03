@@ -685,6 +685,7 @@
         <module>client-basic</module>
         <module>ai</module>
         <module>mcp-registry-adaptor</module>
+        <module>dzy-nacos</module>
     </modules>
     
     <!-- Default dependencies in all subprojects -->
