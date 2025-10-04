@@ -55,19 +55,26 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
     @Override
     public void registerInstance(Service service, Instance instance, String clientId) throws NacosException {
         NamingUtils.checkInstanceIsLegal(instance);
-    
+
+        //将service保存到namespaceServiceMap中,一个namespace下可能有多个service
         Service singleton = ServiceManager.getInstance().getSingleton(service);
         if (!singleton.isEphemeral()) {
             throw new NacosRuntimeException(NacosException.INVALID_PARAM,
                     String.format("Current service %s is persistent service, can't register ephemeral instance.",
                             singleton.getGroupedServiceName()));
         }
+        //ClientManagerDelegate 会根据内部ClientId的格式来判断到底用ConnectionBasedClientManager来管理，还是用PersistentIpPortClientManager来管理
+        //默认用ConnectionBasedClientManager来管理
         Client client = clientManager.getClient(clientId);
         checkClientIsLegal(client, clientId);
         InstancePublishInfo instanceInfo = getPublishInfo(instance);
+        //服务注册的关键，将InstancePublishInfo保存到Client中，一个客户端可以注册多个服务，但是一个服务下只能有一个实例
+        //会发布ClientChangeEvent事件
         client.addServiceInstance(singleton, instanceInfo);
         client.setLastUpdatedTime();
         client.recalculateRevision();
+
+        // 发布服务注册事件，从而更新publisherIndexes，并发布ServiceChangeEvent事件
         NotifyCenter.publishEvent(new ClientOperationEvent.ClientRegisterServiceEvent(singleton, clientId));
         NotifyCenter
                 .publishEvent(new MetadataEvent.InstanceMetadataEvent(singleton, instanceInfo.getMetadataId(), false));

@@ -149,16 +149,21 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     public void registerService(String serviceName, String groupName, Instance instance) throws NacosException {
         NAMING_LOGGER.info("[REGISTER-SERVICE] {} registering service {} with instance {}", namespaceId, serviceName,
                 instance);
+        //判断是否持久化
         if (instance.isEphemeral()) {
+            // 注册临时实例
             registerServiceForEphemeral(serviceName, groupName, instance);
         } else {
+            // 注册持久实例
             doRegisterServiceForPersistent(serviceName, groupName, instance);
         }
     }
     
     private void registerServiceForEphemeral(String serviceName, String groupName, Instance instance)
             throws NacosException {
+        //重做实例缓存
         redoService.cacheInstanceForRedo(serviceName, groupName, instance);
+        //实例注册
         doRegisterService(serviceName, groupName, instance);
     }
     
@@ -262,8 +267,11 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
      * @throws NacosException nacos exception
      */
     public void doRegisterService(String serviceName, String groupName, Instance instance) throws NacosException {
+        // 构建InstanceRequest对象 type为REGISTER_INSTANCE
         InstanceRequest request = new InstanceRequest(namespaceId, serviceName, groupName,
                 NamingRemoteConstants.REGISTER_INSTANCE, instance);
+
+        //发送请求给server端
         requestToServer(request, Response.class);
         redoService.instanceRegistered(serviceName, groupName);
     }

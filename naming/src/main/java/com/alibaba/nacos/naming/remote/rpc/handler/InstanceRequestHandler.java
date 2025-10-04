@@ -58,11 +58,13 @@ public class InstanceRequestHandler extends RequestHandler<InstanceRequest, Inst
     @Secured(action = ActionTypes.WRITE)
     @ExtractorManager.Extractor(rpcExtractor = InstanceRequestParamExtractor.class)
     public InstanceResponse handle(InstanceRequest request, RequestMeta meta) throws NacosException {
+        // Service表示服务，一个服务可能有多个实例，当前正在注册的是其中的一个
         Service service = Service.newService(request.getNamespace(), request.getGroupName(), request.getServiceName(),
                 true);
         InstanceUtil.setInstanceIdIfEmpty(request.getInstance(), service.getGroupedServiceName());
         switch (request.getType()) {
             case NamingRemoteConstants.REGISTER_INSTANCE:
+                //服务注册
                 return registerInstance(service, request, meta);
             case NamingRemoteConstants.DE_REGISTER_INSTANCE:
                 return deregisterInstance(service, request, meta);
@@ -74,6 +76,9 @@ public class InstanceRequestHandler extends RequestHandler<InstanceRequest, Inst
     
     private InstanceResponse registerInstance(Service service, InstanceRequest request, RequestMeta meta)
             throws NacosException {
+        // service 表示服务
+        // request.getInstance() 表示实例
+        // meta.getConnectionId() 表示客户端和服务端的连接id
         clientOperationService.registerInstance(service, request.getInstance(), meta.getConnectionId());
         NotifyCenter.publishEvent(new RegisterInstanceTraceEvent(System.currentTimeMillis(),
                 NamingRequestUtil.getSourceIpForGrpcRequest(meta), true, service.getNamespace(), service.getGroup(),
