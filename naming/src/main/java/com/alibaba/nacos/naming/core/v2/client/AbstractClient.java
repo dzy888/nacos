@@ -71,6 +71,7 @@ public abstract class AbstractClient implements Client {
     @Override
     public boolean addServiceInstance(Service service, InstancePublishInfo instancePublishInfo) {
         if (instancePublishInfo instanceof BatchInstancePublishInfo) {
+            //添加实例信息到publishers
             InstancePublishInfo old = publishers.put(service, instancePublishInfo);
             MetricsMonitor.incrementIpCountWithBatchRegister(old, (BatchInstancePublishInfo) instancePublishInfo);
         } else {

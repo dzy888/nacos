@@ -45,9 +45,11 @@ import java.util.concurrent.ConcurrentMap;
  */
 @Component
 public class ClientServiceIndexesManager extends SmartSubscriber {
-    
+
+    //记录服务有哪些提供者clientId
     private final ConcurrentMap<Service, Set<String>> publisherIndexes = new ConcurrentHashMap<>();
-    
+
+    //记录服务有哪些订阅者clientId
     private final ConcurrentMap<Service, Set<String>> subscriberIndexes = new ConcurrentHashMap<>();
     
     public ClientServiceIndexesManager() {

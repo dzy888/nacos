@@ -34,9 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ServiceManager {
     
     private static final ServiceManager INSTANCE = new ServiceManager();
-    
+    // 单例仓库确保每个逻辑服务只保留一个共享实例，同时允许调用者随时使用新对象进行查询或索引。
     private final ConcurrentHashMap<Service, Service> singletonRepository;
-    
+    // namespace中有多少service
     private final ConcurrentHashMap<String, Set<Service>> namespaceSingletonMaps;
     
     private ServiceManager() {
