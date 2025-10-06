@@ -43,7 +43,7 @@ import java.util.Set;
 
 @Service
 public class RequestHandlerRegistry implements ApplicationListener<ContextRefreshedEvent> {
-    
+    // requestType -> RequestHandler
     Map<String, RequestHandler> registryHandlers = new HashMap<>();
     
     Map<String, Set<String>> sourceRegistry = new HashMap<>();
