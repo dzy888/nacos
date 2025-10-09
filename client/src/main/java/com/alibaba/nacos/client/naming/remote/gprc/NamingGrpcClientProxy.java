@@ -115,6 +115,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         namingFuzzyWatchServiceListHolder.registerNamingGrpcClientProxy(this);
         GrpcClientConfig grpcClientConfig = RpcClientConfigFactory.getInstance()
                 .createGrpcClientConfig(properties.asProperties(), labels);
+        // 创建grpc client
         this.rpcClient = RpcClientFactory.createClient(uuid, ConnectionType.GRPC, grpcClientConfig);
         this.redoService = new NamingGrpcRedoService(this, namingFuzzyWatchServiceListHolder, properties);
         this.enableClientMetrics = Boolean.parseBoolean(

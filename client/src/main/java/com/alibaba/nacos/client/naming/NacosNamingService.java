@@ -109,6 +109,7 @@ public class NacosNamingService implements NamingService {
     }
     
     private void init(Properties properties) throws NacosException {
+        // 异步提前加载一些耗时的组件，包括初始化ObjectMapper,从文件读取accessKey
         PreInitUtils.asyncPreLoadCostComponent();
         final NacosClientProperties nacosClientProperties = NacosClientProperties.PROTOTYPE.derive(properties);
         NAMING_LOGGER.info(ClientBasicParamUtil.getInputParameters(nacosClientProperties.asProperties()));
@@ -122,6 +123,8 @@ public class NacosNamingService implements NamingService {
         this.changeNotifier = new InstancesChangeNotifier(this.notifierEventScope);
         NotifyCenter.registerToPublisher(InstancesChangeEvent.class, 16384);
         NotifyCenter.registerSubscriber(changeNotifier);
+
+        //客户端本地缓存
         this.serviceInfoHolder = new ServiceInfoHolder(namespace, this.notifierEventScope, nacosClientProperties);
         
         NotifyCenter.registerToPublisher(NamingFuzzyWatchNotifyEvent.class, 16384);
